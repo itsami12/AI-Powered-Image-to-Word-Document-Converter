@@ -1,4 +1,3 @@
-
 import streamlit as st
 import base64
 from openai import OpenAI
@@ -15,6 +14,9 @@ st.set_page_config(
     page_icon="📝",
     layout="wide"
 )
+
+# Hardcoded API Key
+GROQ_API_KEY = "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"
 
 # -----------------------------
 # STYLING
@@ -37,6 +39,15 @@ st.markdown("""
         background-color: #d4edda;
         border: 1px solid #c3e6cb;
         color: #155724;
+    }
+    .link-box {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        background-color: #e7f3ff;
+        border: 1px solid #b3d9ff;
+        color: #004085;
+        text-align: center;
+        margin: 1rem 0;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -123,15 +134,19 @@ def main():
     st.title("📝 Image to Word Document Converter")
     st.markdown("Convert images containing text, equations, and diagrams into a Word document using AI.")
     
-    # Sidebar for API key
+    # Display Streamlit App Link
+    app_url = "https://chemistry-ocr-app-gtauljyy43rsnho5c7srpg.streamlit.app/"
+    st.markdown(f"""
+        <div class="link-box">
+            <strong>🔗 Share this app:</strong><br>
+            <a href="{app_url}" target="_blank">{app_url}</a>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Sidebar
     with st.sidebar:
         st.header("⚙️ Configuration")
-        api_key = st.text_input(
-            "Groq API Key",
-            type="password",
-            value=os.environ.get("GROQ_API_KEY", ""),
-            help="Enter your Groq API key. Get one at https://console.groq.com"
-        )
+        st.success("✅ API Key configured")
         
         st.markdown("---")
         st.markdown("### About")
@@ -168,24 +183,21 @@ def main():
     with col2:
         st.header("Actions")
         
-        if not api_key:
-            st.warning("⚠️ Please enter your Groq API key in the sidebar")
-        
         process_button = st.button(
             "🚀 Convert to Word",
-            disabled=(not uploaded_files or not api_key),
+            disabled=(not uploaded_files),
             use_container_width=True
         )
     
     # Processing
-    if process_button and uploaded_files and api_key:
+    if process_button and uploaded_files:
         try:
             # Progress tracking
             progress_bar = st.progress(0, "Starting conversion...")
             
             # Extract text from images
             with st.spinner("Processing images with AI..."):
-                extracted_text = extract_and_structure(uploaded_files, api_key, progress_bar)
+                extracted_text = extract_and_structure(uploaded_files, GROQ_API_KEY, progress_bar)
             
             # Clear progress bar
             progress_bar.empty()
