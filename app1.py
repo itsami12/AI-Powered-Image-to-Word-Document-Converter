@@ -135,13 +135,17 @@ def main():
     st.markdown("Convert images containing text, equations, and diagrams into a Word document using AI.")
     
     # Display Streamlit App Link
-    app_url = "https://chemistry-ocr-app-gtauljyy43rsnho5c7srpg.streamlit.app/"
-    st.markdown(f"""
-        <div class="link-box">
-            <strong>🔗 Share this app:</strong><br>
-            <a href="{app_url}" target="_blank">{app_url}</a>
-        </div>
-    """, unsafe_allow_html=True)
+    if 'STREAMLIT_SHARING_MODE' in os.environ or st.runtime.exists():
+        try:
+            app_url = st.runtime.get_instance().get_url()
+            st.markdown(f"""
+                <div class="link-box">
+                    <strong>🔗 Share this app:</strong><br>
+                    <a href="{app_url}" target="_blank">{app_url}</a>
+                </div>
+            """, unsafe_allow_html=True)
+        except:
+            pass
     
     # Sidebar
     with st.sidebar:
